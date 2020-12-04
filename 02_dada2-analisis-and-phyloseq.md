@@ -1,11 +1,39 @@
 Dada2 tutorial
 ================
 
+  - [Importation des données](#importation-des-données)
+  - [Filter and Trim](#filter-and-trim)
+  - [Dereplication](#dereplication)
+  - [Construct sequence table and remove
+    chimeras](#construct-sequence-table-and-remove-chimeras)
+  - [Assign taxonomy](#assign-taxonomy)
+  - [Taxonomic Filtering](#taxonomic-filtering)
+  - [Prevalence Filtering](#prevalence-filtering)
+  - [Agglomerate taxa](#agglomerate-taxa)
+  - [Abundance value transformation](#abundance-value-transformation)
+  - [Subset by taxonomy](#subset-by-taxonomy)
+  - [Preprocessing](#preprocessing)
+  - [Different Ordination
+    Projections](#different-ordination-projections)
+  - [PCA on ranks](#pca-on-ranks)
+  - [Canonical correspondence](#canonical-correspondence)
+  - [Supervised learning](#supervised-learning)
+  - [Creating and plotting graphs](#creating-and-plotting-graphs)
+  - [Linear modeling](#linear-modeling)
+  - [Multitable techniques](#multitable-techniques)
+
+``` r
+library(knitr)
+library(rmarkdown)
+```
+
 ``` r
 library(dada2)
 ```
 
     ## Loading required package: Rcpp
+
+# Importation des données
 
 ``` r
 path <- "~/EcoG_CC1_YR/EcoG_CC1_YR/MiSeq_SOP" # CHANGE ME to the directory containing the fastq files after unzipping.
@@ -36,6 +64,8 @@ list.files(path)
     ## [43] "mouse.dpw.metadata"            "mouse.time.design"            
     ## [45] "stability.batch"               "stability.files"
 
+# Filter and Trim
+
 ``` r
 # Forward and reverse fastq filenames have format: SAMPLENAME_R1_001.fastq and SAMPLENAME_R2_001.fastq
 fnFs <- sort(list.files(path, pattern="_R1_001.fastq", full.names = TRUE))
@@ -48,7 +78,8 @@ sample.names <- sapply(strsplit(basename(fnFs), "_"), `[`, 1)
 plotQualityProfile(fnFs[1:2])
 ```
 
-![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+
 <span style="color:purple">Les lectures avant sont de bonne
 qualité.</span>
 
@@ -56,7 +87,8 @@ qualité.</span>
 plotQualityProfile(fnRs[1:2])
 ```
 
-![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+
 <span style="color:purple">Les lectures inversées sont de bien moins
 bonne qualité, surtout à la fin, ce qui est courant dans le séquençage
 d’Illumina.</span>
@@ -84,6 +116,8 @@ head(out)
     ## F3D143_S209_L001_R1_001.fastq     3178      2941
     ## F3D144_S210_L001_R1_001.fastq     4827      4312
 
+# Dereplication
+
 ``` r
 errF <- learnErrors(filtFs, multithread=TRUE)
 ```
@@ -104,7 +138,8 @@ plotErrors(errF, nominalQ=TRUE)
     
     ## Warning: Transformation introduced infinite values in continuous y-axis
 
-![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+
 <span style="color:purple">Les taux d’erreur pour chaque transition
 possible : les taux d’erreur estimés après convergence de l’algorithme
 correspondent bien aux taux observés pour chaque score de qualité du
@@ -168,6 +203,8 @@ dadaFs[[1]]
     ## dada-class: object describing DADA2 denoising results
     ## 128 sequence variants were inferred from 1979 input unique sequences.
     ## Key parameters: OMEGA_A = 1e-40, OMEGA_C = 1e-40, BAND_SIZE = 16
+
+# Construct sequence table and remove chimeras
 
 ``` r
 mergers <- mergePairs(dadaFs, filtFs, dadaRs, filtRs, verbose=TRUE)
@@ -284,6 +321,8 @@ head(track)
     ## F3D143  3178     2941      2822      2868   2553    2519
     ## F3D144  4827     4312      4151      4228   3646    3507
 
+# Assign taxonomy
+
 ``` r
 taxa <- assignTaxonomy(seqtab.nochim, "~/silva_nr99_v138_train_set.fa.gz", multithread=TRUE)
 ```
@@ -376,7 +415,8 @@ plot_richness(ps, x="Day", measures=c("Shannon", "Simpson"), color="When")
     ## 
     ## We recommended that you find the un-trimmed data and retry.
 
-![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-30-1.png)<!-- -->
+![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-31-1.png)<!-- -->
+
 <span style="color:blue">Avec les indices de shannon et de simpson ces
 graphiques montrent qui y a pas de différence systématique évidente dans
 la diversité alpha entre les échantillons précoces et tardifs .</span>
@@ -387,45 +427,46 @@ ord.nmds.bray <- ordinate(ps.prop, method="NMDS", distance="bray")
 ```
 
     ## Run 0 stress 0.08043117 
-    ## Run 1 stress 0.0807634 
-    ## ... Procrustes: rmse 0.01056452  max resid 0.03252529 
-    ## Run 2 stress 0.08076338 
-    ## ... Procrustes: rmse 0.01042082  max resid 0.03205498 
+    ## Run 1 stress 0.1327107 
+    ## Run 2 stress 0.08076337 
+    ## ... Procrustes: rmse 0.01050327  max resid 0.03232537 
     ## Run 3 stress 0.08076337 
-    ## ... Procrustes: rmse 0.01043051  max resid 0.0320879 
-    ## Run 4 stress 0.1432847 
-    ## Run 5 stress 0.1212044 
-    ## Run 6 stress 0.08616061 
-    ## Run 7 stress 0.1334791 
-    ## Run 8 stress 0.1010632 
+    ## ... Procrustes: rmse 0.01051062  max resid 0.03234912 
+    ## Run 4 stress 0.08616061 
+    ## Run 5 stress 0.3744246 
+    ## Run 6 stress 0.1212044 
+    ## Run 7 stress 0.08616061 
+    ## Run 8 stress 0.08076338 
+    ## ... Procrustes: rmse 0.01052318  max resid 0.03239025 
     ## Run 9 stress 0.08076337 
-    ## ... Procrustes: rmse 0.01050318  max resid 0.03232509 
-    ## Run 10 stress 0.0947718 
-    ## Run 11 stress 0.08043116 
+    ## ... Procrustes: rmse 0.01050876  max resid 0.03234343 
+    ## Run 10 stress 0.08043117 
+    ## ... Procrustes: rmse 4.749053e-06  max resid 1.438854e-05 
+    ## ... Similar to previous best
+    ## Run 11 stress 0.08616061 
+    ## Run 12 stress 0.08043116 
     ## ... New best solution
-    ## ... Procrustes: rmse 2.027296e-06  max resid 5.470501e-06 
+    ## ... Procrustes: rmse 2.427301e-06  max resid 5.682762e-06 
     ## ... Similar to previous best
-    ## Run 12 stress 0.08076336 
-    ## ... Procrustes: rmse 0.0104904  max resid 0.03228188 
-    ## Run 13 stress 0.09477201 
-    ## Run 14 stress 0.08076337 
-    ## ... Procrustes: rmse 0.01049936  max resid 0.03231114 
-    ## Run 15 stress 0.1228545 
-    ## Run 16 stress 0.08076342 
-    ## ... Procrustes: rmse 0.0105934  max resid 0.03261798 
+    ## Run 13 stress 0.08616061 
+    ## Run 14 stress 0.08076338 
+    ## ... Procrustes: rmse 0.01052912  max resid 0.03240825 
+    ## Run 15 stress 0.08076339 
+    ## ... Procrustes: rmse 0.01055056  max resid 0.03247795 
+    ## Run 16 stress 0.09477231 
     ## Run 17 stress 0.08616061 
-    ## Run 18 stress 0.08616061 
-    ## Run 19 stress 0.08043117 
-    ## ... Procrustes: rmse 2.544845e-06  max resid 4.576302e-06 
-    ## ... Similar to previous best
-    ## Run 20 stress 0.08616061 
+    ## Run 18 stress 0.09477182 
+    ## Run 19 stress 0.08076337 
+    ## ... Procrustes: rmse 0.01042283  max resid 0.03206126 
+    ## Run 20 stress 0.1010633 
     ## *** Solution reached
 
 ``` r
 plot_ordination(ps.prop, ord.nmds.bray, color="When", title="Bray NMDS")
 ```
 
-![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-32-1.png)<!-- -->
+![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-33-1.png)<!-- -->
+
 <span style="color:purple">L’ordination établit une dissimilarité nette
 entre les échantillons précoces et tardifs.</span>
 
@@ -436,7 +477,8 @@ ps.top20 <- prune_taxa(top20, ps.top20)
 plot_bar(ps.top20, x="Day", fill="Family") + facet_wrap(~When, scales="free_x")
 ```
 
-![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-33-1.png)<!-- -->
+![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-34-1.png)<!-- -->
+
 <span style="color:blue">Cet histogramme montre l’abondance relative, la
 composition des communautés bactériennes et leurs distribution
 taxonomique pour expliquer la différenciation précoce et tardive.</span>
@@ -452,6 +494,8 @@ ps
     ## sample_data() Sample Data:       [ 360 samples by 14 sample variables ]
     ## tax_table()   Taxonomy Table:    [ 389 taxa by 6 taxonomic ranks ]
     ## phy_tree()    Phylogenetic Tree: [ 389 tips and 387 internal nodes ]
+
+# Taxonomic Filtering
 
 ``` r
 rank_names(ps)
@@ -480,6 +524,8 @@ table(tax_table(ps)[, "Phylum"], exclude = NULL)
 ``` r
 ps <- subset_taxa(ps, !is.na(Phylum) & !Phylum %in% c("", "uncharacterized"))
 ```
+
+# Prevalence Filtering
 
 ``` r
 prevdf = apply(X = otu_table(ps),
@@ -528,7 +574,8 @@ ggplot(prevdf1, aes(TotalAbundance, Prevalence / nsamples(ps),color=Phylum)) + g
   facet_wrap(~Phylum) + theme(legend.position="none")
 ```
 
-![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-42-1.png)<!-- -->
+![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-43-1.png)<!-- -->
+
 <span style="color:blue">Prévalence des taxons par rapport aux comptages
 totaux.</span>
 
@@ -548,6 +595,8 @@ prevalenceThreshold
 keepTaxa = rownames(prevdf1)[(prevdf1$Prevalence >= prevalenceThreshold)]
 ps2 = prune_taxa(keepTaxa, ps)
 ```
+
+# Agglomerate taxa
 
 ``` r
 length(get_taxa_unique(ps2, taxonomic.rank = "Genus"))
@@ -582,13 +631,16 @@ p4tree = plot_tree(ps4, method = "treeonly",
 gridExtra::grid.arrange(nrow = 1, p2tree, p3tree, p4tree)
 ```
 
-![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-49-1.png)<!-- -->
+![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-50-1.png)<!-- -->
+
 <span style="color:blue">Différents types d’agglomération.</span>
 
 <span style="color:purple"> Ces trois arbres phylogénétiques à gauche
 montre 2 differents types d’agglomération: l’agglomération taxonomique
 dans la gamme de genre au milieu et l’agglomération phylogénétique à une
 distance fixe de 0,4 sur la droite .</span>
+
+# Abundance value transformation
 
 ``` r
 plot_abundance = function(physeq,title = "",
@@ -618,7 +670,8 @@ plotAfter = plot_abundance(ps3ra,"")
 gridExtra::grid.arrange(nrow = 2,  plotBefore, plotAfter)
 ```
 
-![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-53-1.png)<!-- -->
+![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-54-1.png)<!-- -->
+
 <span style="color:blue">Comparaison des abondances initiales avec les
 données transformées.</span>
 
@@ -628,23 +681,31 @@ mélange de deux genres différents, et l’abondance relative typique des
 bactéries lactiques était beaucoup plus grande que celle des
 streptocoques.</span>
 
+# Subset by taxonomy
+
 ``` r
 psOrd = subset_taxa(ps3ra, Order == "Lactobacillales")
 plot_abundance(psOrd, Facet = "Genus", Color = NULL)
 ```
 
-![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-54-1.png)<!-- -->
+![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-55-1.png)<!-- -->
+
 <span style="color:blue">Graphique au violon des abondances relatives
-des Lactobacillales.</span> <span style="color:purple"> La figure montre
-l’abondance relative des lactobacilles bactériens classés par sexe et
-genre de l’hôte.</span>
+des Lactobacillales.</span>
+
+<span style="color:purple"> La figure montre l’abondance relative des
+lactobacilles bactériens classés par sexe et genre de l’hôte.</span>
+
+# Preprocessing
 
 ``` r
 qplot(sample_data(ps)$age, geom = "histogram",binwidth=20) + xlab("age")
 ```
 
-![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-55-1.png)<!-- -->
+![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-56-1.png)<!-- -->
+
 <span style="color:blue">Histogramme des groupes d’âge.</span>
+
 <span style="color:purple"> L’ histogramme montre que la covariable
 d’âge stimule la création de nouvelles variables catégorielles en
 associant l’âge à l’un des trois pics.</span>
@@ -654,7 +715,8 @@ qplot(log10(rowSums(otu_table(ps))),binwidth=0.2) +
   xlab("Logged counts-per-sample")
 ```
 
-![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-56-1.png)<!-- -->
+![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-57-1.png)<!-- -->
+
 <span style="color:blue">Histogrammes comparant les profondeurs de
 lecture brutes et transformées par logarithme.</span>
 
@@ -672,7 +734,7 @@ out.wuf.log <- ordinate(pslog, method = "MDS", distance = "wunifrac")
 ```
 
     ## Warning in UniFrac(physeq, weighted = TRUE, ...): Randomly assigning root as --
-    ## GCGAGCGTTATCCGGATTCACTGGGTGTAAAGGGAGCGTAGACGGCCAAGCAAGCCAGGGGTGAAAGCCCGGGGCCCAACCCCGGGACTGCCCTTGGAACTGCATGGCTGGAGTGCGGGAGGGGCAGGCGGAATTCCTGGTGTAGCGGTGAAATGCGTAGATATCAGGAGGAACACCGGCGGCGAAGGCGGCCTGCTGGATCGCGACTGACGTTGAGGCTCGAAAGCGTGGGGAG
+    ## GCAAGCGTTATCCGGAATGACTGGGCGTAAAGGGTGCGTAGGTGGTTTGGCAAGTTGGTAGCGTAATTCCGGGGCTCAACCTCGGCGCTACTACCAAAACTGCTGGACTTGAGTGCAGGAGGGGTGAATGGAATTCCTAGTGTAGCGGTGGAATGCGTAGATATTAGGAAGAACACCAGCGGCGAAGGCGATTCACTGGACTGTAACTGACACTGAGGCACGAAAGCGTGGGGAG
     ## -- in the phylogenetic tree in the data you provided.
 
 ``` r
@@ -682,7 +744,8 @@ plot_ordination(pslog, out.wuf.log, color = "age_binned") +
   coord_fixed(sqrt(evals[2] / evals[1]))
 ```
 
-![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-57-1.png)<!-- -->
+![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-58-1.png)<!-- -->
+
 <span style="color:blue">Analyse d’ordination exploratoire avec les
 abondances des logs.</span>
 
@@ -695,7 +758,8 @@ qplot(rel_abund[, 12], geom = "histogram",binwidth=0.05) +
   xlab("Relative abundance")
 ```
 
-![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-58-1.png)<!-- -->
+![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-59-1.png)<!-- -->
+
 <span style="color:blue">Un tracé de PCoA utilisant Bray-Curtis entre
 les échantillons.</span>
 
@@ -705,6 +769,8 @@ l’age, et le biplot suggère une interprétation du deuxième axe: les
 échantillons qui obtiennent un score plus élevé sur le deuxième axe ont
 un taux plus élevé de Bacteroidetes et un sous-ensemble de
 Firmicutes.</span>
+
+# Different Ordination Projections
 
 ``` r
 outliers <- c("F5D165", "F6D165", "M3D175", "M4D175", "M5D175", "M6D175")
@@ -732,7 +798,8 @@ plot_ordination(pslog, out.pcoa.log, color = "age_binned",
   coord_fixed(sqrt(evals[2] / evals[1]))
 ```
 
-![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-61-1.png)<!-- -->
+![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-62-1.png)<!-- -->
+
 <span style="color:blue">Un diagramme DPCoA intègre des informations
 phylogénétiques, mais est dominé par le premier axe.</span>
 
@@ -750,7 +817,8 @@ plot_ordination(pslog, out.dpcoa.log, color = "age_binned", label= "SampleID",
   coord_fixed(sqrt(evals[2] / evals[1]))
 ```
 
-![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-62-1.png)<!-- -->
+![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-63-1.png)<!-- -->
+
 <span style="color:blue">Taxons responsables des axes 1 et 2.</span>
 
 <span style="color:purple"> les résultats du PCoA avec Unifrac pondéré
@@ -764,14 +832,14 @@ plot_ordination(pslog, out.dpcoa.log, type = "species", color = "Phylum") +
   coord_fixed(sqrt(evals[2] / evals[1]))
 ```
 
-![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-63-1.png)<!-- -->
+![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-64-1.png)<!-- -->
 
 ``` r
 out.wuf.log <- ordinate(pslog, method = "PCoA", distance ="wunifrac")
 ```
 
     ## Warning in UniFrac(physeq, weighted = TRUE, ...): Randomly assigning root as --
-    ## GCGAGCGTTGTCCGGAATCACTGGGCGTAAAGGGCGCGTAGGCGGTTTAATAAGTCAGTGGTGAAAACTGAGGGCTCAACCCTCAGCCTGCCACTGATACTGTTAGACTTGAGTATGGAAGAGGAGAATGGAATTCCTAGTGTAGCGGTGAAATGCGTAGATATTAGGAGGAACACCAGTGGCGAAGGCGATTCTCTGGGCCAAGACTGACGCTGAGGCGCGAAAGCGTGGGGAG
+    ## GCGAGCGTTATCCGGATTTACTGGGTGTAAAGGGAGCGCAGGCGGCGTGGCAAGTCAGATGTGAAAACCCGGGGCCCAACCCCGGGACTGCATTTGAAACTGCCATGCTGGAGTGCCGGAGAGGTAAGTGGAATTCCTAGTGTAGCGGTGAAATGCGTAGATATTAGGAGGAACACCAGTGGCGAAGGCGGCTTACTGGACGGTAACTGACGCTGAGGCTCGAAAGCGTGGGGAG
     ## -- in the phylogenetic tree in the data you provided.
 
 ``` r
@@ -782,9 +850,12 @@ plot_ordination(pslog, out.wuf.log, color = "age_binned",
   labs(col = "Binned Age", shape = "Litter")
 ```
 
-![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-64-1.png)<!-- -->
+![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-65-1.png)<!-- -->
+
 <span style="color:blue">Les positions de l’échantillon produites par un
 PCoA en utilisant l’Unifrac pondéré.</span>
+
+# PCA on ranks
 
 ``` r
 abund <- otu_table(pslog)
@@ -837,7 +908,8 @@ ggplot(abund_df %>%
   scale_color_brewer(palette = "Set2")
 ```
 
-![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-66-1.png)<!-- -->
+![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-67-1.png)<!-- -->
+
 <span style="color:blue">Transformation du seuil de classement.</span>
 
 <span style="color:purple"> L’association entre l’abondance et le rang,
@@ -880,7 +952,8 @@ ggplot() +
   theme(panel.border = element_rect(color = "#787878", fill = alpha("white", 0)))
 ```
 
-![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-68-1.png)<!-- -->
+![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-69-1.png)<!-- -->
+
 <span style="color:blue">Le biplot résultant de l’ACP après la
 transformation de classement tronqué.</span>
 
@@ -888,6 +961,8 @@ transformation de classement tronqué.</span>
 du PCoA calculées sans appliquer une transformation de classement
 tronqué, ce qui renforce notre confiance dans l’analyse des données
 originales.</span>
+
+# Canonical correspondence
 
 ``` r
 ps_ccpna <- ordinate(pslog, "CCA", formula = pslog ~ age_binned + family_relationship)
@@ -934,17 +1009,22 @@ ggplot() +
   theme(panel.border = element_rect(color = "#787878", fill = alpha("white", 0)))
 ```
 
-![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-70-1.png)<!-- -->
+![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-71-1.png)<!-- -->
+
 <span style="color:blue">Les scores de souris et de bactéries générés
-par le CCpnA.</span> <span style="color:purple">la CCpnA qui en résulte
-garantit que les orientations se situent dans la fourchette des
-variables environnementales, des traitements approfondis sont
-disponibles dedans.</span>
+par le CCpnA.</span>
+
+<span style="color:purple">la CCpnA qui en résulte garantit que les
+orientations se situent dans la fourchette des variables
+environnementales, des traitements approfondis sont disponibles
+dedans.</span>
 
 ``` r
 library("lattice")
 library("ggplot2")
 ```
+
+# Supervised learning
 
 ``` r
 library(caret)
@@ -966,8 +1046,8 @@ table(plsClasses, testing$age)
 
     ##            
     ## plsClasses  (0,100] (100,400]
-    ##   (0,100]        65         1
-    ##   (100,400]       2        41
+    ##   (0,100]        58         0
+    ##   (100,400]      13        46
 
 ``` r
 library(randomForest)
@@ -997,8 +1077,8 @@ table(rfClasses, testing$age)
 
     ##            
     ## rfClasses   (0,100] (100,400]
-    ##   (0,100]        66         0
-    ##   (100,400]       1        42
+    ##   (0,100]        70         8
+    ##   (100,400]       1        38
 
 ``` r
 library(vegan)
@@ -1089,7 +1169,8 @@ ggplot() +
   theme(panel.border = element_rect(color = "#787878", fill = alpha("white", 0)))
 ```
 
-![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-78-1.png)<!-- -->
+![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-79-1.png)<!-- -->
+
 <span style="color:blue">Le PLS produit une représentation biplot conçue
 pour séparer les échantillons par une variable de réponse.</span>
 
@@ -1113,7 +1194,8 @@ ggplot(rf_prox) +
   labs(col = "Binned Age", x = "Axis1", y = "Axis2")
 ```
 
-![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-79-1.png)<!-- -->
+![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-80-1.png)<!-- -->
+
 <span style="color:blue">Le modèle de forêt aléatoire détermine une
 distance entre les échantillons, qui peut être entrée dans le PCoA pour
 produire une parcelle de proximité.</span>
@@ -1134,7 +1216,7 @@ difficiles à classer.</span>
 as.vector(tax_table(ps)[which.max(importance(rfFit$finalModel)), c("Family", "Genus")])
 ```
 
-    ## [1] "Lachnospiraceae" "Roseburia"
+    ## [1] "Erysipelotrichaceae" "Turicibacter"
 
 ``` r
 impOtu <- as.vector(otu_table(pslog)[,which.max(importance(rfFit$finalModel))])
@@ -1146,7 +1228,8 @@ ggplot(maxImpDF) +   geom_histogram(aes(x = abund)) +
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-81-1.png)<!-- -->
+![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-82-1.png)<!-- -->
+
 <span style="color:blue">Aides forestières aléatoires à l’interprétation
 : notes d’importance.</span>
 
@@ -1155,6 +1238,8 @@ le genre Roseburia ayant le plus d’influence dans la prédiction de la
 forêt aléatoire. cette figure illustre son abondance dans les
 échantillons, et nous voyons qu’il est uniformément très faible de 0 à
 100 jours et beaucoup plus élevé de 100 à 400 jours.</span>
+
+# Creating and plotting graphs
 
 ``` r
 library("phyloseqGraphTest")
@@ -1263,7 +1348,8 @@ ggplot(net_graph, aes(x = x, y = y, xend = xend, yend = yend), layout = "fruchte
   guides(col = guide_legend(override.aes = list(size = .5)))
 ```
 
-![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-85-1.png)<!-- -->
+![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-86-1.png)<!-- -->
+
 <span style="color:blue">Un réseau créé par le seuillage de la matrice
 de dissimilarité Jaccard.</span>
 
@@ -1271,6 +1357,8 @@ de dissimilarité Jaccard.</span>
 souris d’où provient l’échantillon et la forme représente la litière
 dans laquelle se trouvait la souris. Nous pouvons voir qu’il y a un
 regroupement des échantillons à la fois par souris et par portée.</span>
+
+# Linear modeling
 
 ``` r
 library("nlme")
@@ -1340,7 +1428,8 @@ ggplot(ps_samp %>% left_join(new_data)) +
 
     ## Joining, by = c("host_subject_id", "age_binned")
 
-![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-91-1.png)<!-- -->
+![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-92-1.png)<!-- -->
+\# Hierarchical multiple testing
 
 ``` r
 library("reshape2")
@@ -1388,7 +1477,8 @@ ggplot(abund_sums) +
   xlab("Total abundance within sample")
 ```
 
-![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-96-1.png)<!-- -->
+![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-97-1.png)<!-- -->
+
 <span style="color:blue">Abondance de la transformation du DEseq.</span>
 
 <span style="color:purple"> L’histogramme du haut donne l’abondance
@@ -1474,6 +1564,8 @@ tax %>%
     ## 8               ***
     ## 9               ***
     ## 10              ***
+
+# Multitable techniques
 
 ``` r
 metab <- read.csv("https://raw.githubusercontent.com/spholmes/F1000_workflow/master/data/metabolites.csv",row.names = 1)
@@ -1580,7 +1672,8 @@ ggplot() +  geom_point(data = sample_info,
        fill = "Feature Type", col = "Sample Type")
 ```
 
-![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-109-1.png)<!-- -->
+![](02_dada2-analisis-and-phyloseq_files/figure-gfm/unnamed-chunk-110-1.png)<!-- -->
+
 <span style="color:blue">Un triplot d’ACP produit à partir de l’ACC a
 sélectionné des caractéristiques parmi plusieurs types de données :
 métabolites et OTU.</span>
