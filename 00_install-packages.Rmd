@@ -1,0 +1,98 @@
+---
+title: "metabarcoding with dada2: environment installation"
+output: github_document
+
+---
+
+```{r}
+library("knitr")
+library(rmarkdown)
+```
+  
+# update VM configuration
+``` {bash}
+sudo apt-get update -y 
+sudo apt-get install -y libbz2-dev
+sudo apt-get install -y liblzma-dev
+sudo apt-get install libglpk-dev
+```
+
+```{r}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+BiocManager::install(version = '3.11')
+BiocManager::install("dada2", version = "3.11", INSTALL_opts = "--no-lock")
+```
+
+```{r}
+if(!requireNamespace("BiocManager")){
+  install.packages("BiocManager")
+}
+BiocManager::install("phyloseq")
+```
+
+```{r}
+BiocManager::install("Biostrings")
+```
+
+
+```{r}
+BiocManager::install("phangorn")
+```
+
+```{r}
+BiocManager::install("DECIPHER")
+```
+
+```{r}
+BiocManager::install("ggplot2")
+```
+
+```{r}
+install.packages("gridExtra")
+```
+
+```{r}
+library(phyloseq)
+library(DECIPHER)
+library(phangorn)
+```
+
+```{r}
+BiocManager::install("DESeq2")
+```
+
+```{r}
+install.packages("usethis")
+```
+
+```{r}
+library(usethis)
+use_git_config(user.name = "Youssef-Raouf-1", user.email = "raouf.youssef18@gmail.com")
+```
+
+```{r}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("S4Vectors")
+```
+
+```{r}
+library(Biostrings)
+```
+
+```{r}
+library(ggplot2)
+```
+
+```{r}
+BiocManager::install("S4Vectors", INSTALL_opts = "--no-lock")
+```
+
+
+
+
+
+
+
