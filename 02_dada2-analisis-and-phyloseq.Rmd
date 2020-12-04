@@ -3,6 +3,9 @@ title: "Dada2 tutorial"
 output: github_document
 ---
 
+```{r warning=FALSE}
+library(dada2)
+```
 
 
 ```{r}
@@ -18,7 +21,7 @@ fnRs <- sort(list.files(path, pattern="_R2_001.fastq", full.names = TRUE))
 sample.names <- sapply(strsplit(basename(fnFs), "_"), `[`, 1)
 ```
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 plotQualityProfile(fnFs[1:2])
 ```
 <span style="color:purple">Les lectures avant sont de bonne qualité.</span>
@@ -103,17 +106,10 @@ rownames(track) <- sample.names
 head(track)
 ```
 
-```{bash}
-cd $Home
-wget https://zenodo.org/record/3986799/files/silva_nr99_v138_train_set.fa.gz
-```
+
 
 ```{r}
 taxa <- assignTaxonomy(seqtab.nochim, "~/silva_nr99_v138_train_set.fa.gz", multithread=TRUE)
-```
-
-```{bash}
-wget https://zenodo.org/record/2658728/files/RefSeq-RDP_dada2_assignment_species.fa.gz?
 ```
 
 
@@ -198,7 +194,7 @@ ps.top20 <- transform_sample_counts(ps, function(OTU) OTU/sum(OTU))
 ps.top20 <- prune_taxa(top20, ps.top20)
 plot_bar(ps.top20, x="Day", fill="Family") + facet_wrap(~When, scales="free_x")
 ```
-<span style="color:blue"> Cet histogramme montre l'abondance relative, la composition des communautés bactériennes et leurs distribution taxonomique pour expliquer la différenciation précoce et tardive.</span>
+<span style="color:blue">Cet histogramme montre l'abondance relative, la composition des communautés bactériennes et leurs distribution taxonomique pour expliquer la différenciation précoce et tardive.</span>
 
 ```{r}
 ps_connect <-url("https://raw.githubusercontent.com/spholmes/F1000_workflow/master/data/ps.rds")
@@ -246,7 +242,7 @@ ggplot(prevdf1, aes(TotalAbundance, Prevalence / nsamples(ps),color=Phylum)) + g
   scale_x_log10() +  xlab("Total Abundance") + ylab("Prevalence [Frac. Samples]") +
   facet_wrap(~Phylum) + theme(legend.position="none")
 ```
-<span style="color:blue"> Figure 2 : Prévalence des taxons par rapport aux comptages totaux.</span>
+<span style="color:blue">Prévalence des taxons par rapport aux comptages totaux.</span>
 
 <span style="color:purple"> Chaque point de la figure 2 est un taxon différent. Ces graphes montrent que les firmicutes sont très abondant en fonction de l'abondance totale, alors que certains phylum sont à faible abondance.</span>
 
@@ -292,7 +288,7 @@ p4tree = plot_tree(ps4, method = "treeonly",
 ```{r}
 gridExtra::grid.arrange(nrow = 1, p2tree, p3tree, p4tree)
 ```
-<span style="color:blue"> Figure 3 : Différents types d'agglomération.</span>
+<span style="color:blue">Différents types d'agglomération.</span>
 
 <span style="color:purple"> Ces trois arbres phylogénétiques à gauche montre 2 differents  types d'agglomération: l'agglomération taxonomique dans la gamme de genre au milieu et l'agglomération phylogénétique à une distance fixe de 0,4 sur la droite .</span>
 
@@ -324,7 +320,7 @@ plotAfter = plot_abundance(ps3ra,"")
 ```{r}
 gridExtra::grid.arrange(nrow = 2,  plotBefore, plotAfter)
 ```
-<span style="color:blue"> Figure 4 : Comparaison des abondances initiales avec les données transformées.</span>
+<span style="color:blue">Comparaison des abondances initiales avec les données transformées.</span>
 
 <span style="color:purple"> La figure montre la distribution biomorphologique évidente des bactéries lactiques était le résultat d'un mélange de deux genres différents, et l'abondance relative typique des bactéries lactiques était beaucoup plus grande que celle des streptocoques.</span>
 
@@ -333,20 +329,20 @@ gridExtra::grid.arrange(nrow = 2,  plotBefore, plotAfter)
 psOrd = subset_taxa(ps3ra, Order == "Lactobacillales")
 plot_abundance(psOrd, Facet = "Genus", Color = NULL)
 ```
-<span style="color:blue"> Figure 5 : Graphique au violon des abondances relatives des Lactobacillales.</span>
+<span style="color:blue">Graphique au violon des abondances relatives des Lactobacillales.</span>
 <span style="color:purple"> La figure montre l'abondance relative des lactobacilles bactériens classés par sexe et genre de l'hôte.</span>
 
 ```{r}
 qplot(sample_data(ps)$age, geom = "histogram",binwidth=20) + xlab("age")
 ```
-<span style="color:blue"> Figure 6 : Histogramme des groupes d'âge.</span>
+<span style="color:blue">Histogramme des groupes d'âge.</span>
 <span style="color:purple"> L' histogramme montre que la covariable d'âge stimule la création de nouvelles variables catégorielles en associant l'âge à l'un des trois pics.</span>
 
 ```{r}
 qplot(log10(rowSums(otu_table(ps))),binwidth=0.2) +
   xlab("Logged counts-per-sample")
 ```
-<span style="color:blue"> Figure 7 : Histogrammes comparant les profondeurs de lecture brutes et transformées par logarithme.</span>
+<span style="color:blue">Histogrammes comparant les profondeurs de lecture brutes et transformées par logarithme.</span>
 
 <span style="color:purple"> L'histogramme suggère qu'une transformation log(1+x) pourrait être suffisante pour normaliser les données d'abondance pour les analyses exploratoires.</span>
 
@@ -362,7 +358,7 @@ plot_ordination(pslog, out.wuf.log, color = "age_binned") +
   labs(col = "Binned Age") +
   coord_fixed(sqrt(evals[2] / evals[1]))
 ```
-<span style="color:blue"> Figure 8 : Analyse d'ordination exploratoire avec les abondances des logs.</span>
+<span style="color:blue">Analyse d'ordination exploratoire avec les abondances des logs.</span>
 
 <span style="color:purple"> l'ordination des données d'abondance enregistrées révèle quelques valeurs aberrantes.</span>
 
@@ -372,7 +368,7 @@ rel_abund <- t(apply(otu_table(ps), 1, function(x) x / sum(x)))
 qplot(rel_abund[, 12], geom = "histogram",binwidth=0.05) +
   xlab("Relative abundance")
 ```
-<span style="color:blue"> Figure 10 : Un tracé de PCoA utilisant Bray-Curtis entre les échantillons.</span>
+<span style="color:blue">Un tracé de PCoA utilisant Bray-Curtis entre les échantillons.</span>
 
 <span style="color:purple">  L'analyse des coordonnées principales doubles (DPCoA) fournit une représentation de la corrélation entre l'age, et le biplot suggère une interprétation du deuxième axe: les échantillons qui obtiennent un score plus élevé sur le deuxième axe ont un taux plus élevé de Bacteroidetes et un sous-ensemble de Firmicutes.</span>
 
@@ -398,7 +394,7 @@ plot_ordination(pslog, out.pcoa.log, color = "age_binned",
 
 
 ```
-<span style="color:blue"> Figure 11 : Un diagramme DPCoA intègre des informations phylogénétiques, mais est dominé par le premier axe.</span>
+<span style="color:blue">Un diagramme DPCoA intègre des informations phylogénétiques, mais est dominé par le premier axe.</span>
 
 <span style="color:purple"> Dans cette diagramme, le premier axe explique 75 % de la variabilité, soit environ 9 fois celle du deuxième axe, cela se traduit par les distances phylogénétiques entre les différents taxon.</span>
 
@@ -410,7 +406,7 @@ plot_ordination(pslog, out.dpcoa.log, color = "age_binned", label= "SampleID",
   labs(col = "Binned Age", shape = "Litter")+
   coord_fixed(sqrt(evals[2] / evals[1]))
 ```
-<span style="color:blue"> Figure 12 : Taxons responsables des axes 1 et 2.</span>
+<span style="color:blue">Taxons responsables des axes 1 et 2.</span>
 
 <span style="color:purple"> les résultats du PCoA avec Unifrac pondéré du deuxième axe  associé à l'effet d'âge des communautés bactériennes est  assez similaires de celui du DPCoA. Sauf que le PCoA a fourni une interprétation beaucoup plus nette du deuxième axe, par rapport à l'Unifrac pondéré.</span>
 
@@ -428,7 +424,7 @@ plot_ordination(pslog, out.wuf.log, color = "age_binned",
   coord_fixed(sqrt(evals[2] / evals[1])) +
   labs(col = "Binned Age", shape = "Litter")
 ```
-<span style="color:blue"> Figure 13 : Les positions de l'échantillon produites par un PCoA en utilisant l'Unifrac pondéré.</span>
+<span style="color:blue">Les positions de l'échantillon produites par un PCoA en utilisant l'Unifrac pondéré.</span>
 
 ```{r}
 abund <- otu_table(pslog)
@@ -456,13 +452,13 @@ ggplot(abund_df %>%
   labs(x = "Abundance", y = "Thresholded rank") +
   scale_color_brewer(palette = "Set2")
 ```
-<span style="color:blue"> Figure 14 : Transformation du seuil de classement.</span>
+<span style="color:blue">Transformation du seuil de classement.</span>
 
 <span style="color:purple"> L'association entre l'abondance et le rang, pour quelques échantillons choisis au hasard. Les nombres de l'axe des y sont ceux fournis à l'ACP.</span>
 
 
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 library(ade4)
 ranks_pca <- dudi.pca(abund_ranks, scannf = F, nf = 3)
 row_scores <- data.frame(li = ranks_pca$li,
@@ -497,7 +493,7 @@ ggplot() +
   coord_fixed(sqrt(ranks_pca$eig[2] / ranks_pca$eig[1])) +
   theme(panel.border = element_rect(color = "#787878", fill = alpha("white", 0)))
 ```
-<span style="color:blue"> Figure 15 : Le biplot résultant de l'ACP après la transformation de classement tronqué.</span>
+<span style="color:blue">Le biplot résultant de l'ACP après la transformation de classement tronqué.</span>
 
 <span style="color:purple"> Les résultats sont similaires aux analyses du PCoA calculées sans appliquer une transformation de classement tronqué, ce qui renforce notre confiance dans l'analyse des données originales.</span>
 
@@ -532,7 +528,7 @@ ggplot() +
   coord_fixed(sqrt(ps_ccpna$CCA$eig[2] / ps_ccpna$CCA$eig[1])*0.45   ) +
   theme(panel.border = element_rect(color = "#787878", fill = alpha("white", 0)))
 ```
-<span style="color:blue"> Figure 16 : Les scores de souris et de bactéries générés par le CCpnA.</span>
+<span style="color:blue">Les scores de souris et de bactéries générés par le CCpnA.</span>
 <span style="color:purple">la CCpnA qui en résulte garantit que les orientations se situent dans la fourchette des variables environnementales, des traitements approfondis sont disponibles dedans.</span>
 
 ```{r}
@@ -608,7 +604,7 @@ ggplot() +
   facet_grid( ~ age2) +
   theme(panel.border = element_rect(color = "#787878", fill = alpha("white", 0)))
 ```
-<span style="color:blue"> Figure 17 : Le PLS produit une représentation biplot conçue pour séparer les échantillons par une variable de réponse.</span>
+<span style="color:blue">Le PLS produit une représentation biplot conçue pour séparer les échantillons par une variable de réponse.</span>
 
 <span style="color:purple"> Ce biplot peut être interprété de la même manière que les diagrammes d'ordination précédents, à l'exception du fait que la projection est choisie avec une référence explicite à la variable d'âge binned. Plus précisément, le PLS identifie un sous-espace pour maximiser la discrimination entre les classes et le biplot affiche des projections d'échantillons et des coefficients ASV par rapport à ce sous-espace.</span>
 
@@ -624,7 +620,7 @@ ggplot(rf_prox) +
   guides(col = guide_legend(override.aes = list(size = 4))) +
   labs(col = "Binned Age", x = "Axis1", y = "Axis2")
 ```
-<span style="color:blue"> Figure 18 : Le modèle de forêt aléatoire détermine une distance entre les échantillons, qui peut être entrée dans le PCoA pour produire une parcelle de proximité.</span>
+<span style="color:blue">Le modèle de forêt aléatoire détermine une distance entre les échantillons, qui peut être entrée dans le PCoA pour produire une parcelle de proximité.</span>
 
 <span style="color:purple"> Pour générer une une courbe de proximité aléatoire, une distance est calculée entre les échantillons en fonction de la fréquence d'apparition des échantillons dans la même partition d'arbre dans la procédure d'amorçage de la forêt aléatoire. Si une paire d'échantillons se produit fréquemment dans la même partition, une faible distance est attribuée à la paire. Les distances résultantes sont ensuite entrées dans le PCoA, ce qui donne un aperçu du mécanisme de classification des forêts aléatoires, par ailleurs complexe. La séparation entre les classes est claire, et l'inspection manuelle des points révélerait quels types d'échantillons sont plus faciles ou plus difficiles à classer.</span>
 
@@ -641,11 +637,11 @@ ggplot(maxImpDF) +   geom_histogram(aes(x = abund)) +
   facet_grid(age2 ~ .) +
   labs(x = "Abundance of discriminative bacteria", y = "Number of samples")
 ```
-<span style="color:blue"> Figure 19 : Aides forestières aléatoires à l'interprétation : notes d'importance.</span>
+<span style="color:blue">Aides forestières aléatoires à l'interprétation : notes d'importance.</span>
 
 <span style="color:purple"> identification du microbe Lachnospiraceae et le genre Roseburia ayant le plus d'influence dans la prédiction de la forêt aléatoire. cette figure illustre son abondance dans les échantillons, et nous voyons qu'il est uniformément très faible de 0 à 100 jours et beaucoup plus élevé de 100 à 400 jours.</span>
 
-```{r}
+```{r message=FALSE}
 library("phyloseqGraphTest")
 library("igraph")
 library("ggnetwork")
@@ -682,7 +678,7 @@ ggplot(net_graph, aes(x = x, y = y, xend = xend, yend = yend), layout = "fruchte
         legend.key.height = unit(0.5,"line")) +
   guides(col = guide_legend(override.aes = list(size = .5)))
 ```
-<span style="color:blue"> Figure 20 : Un réseau créé par le seuillage de la matrice de dissimilarité Jaccard.</span>
+<span style="color:blue">Un réseau créé par le seuillage de la matrice de dissimilarité Jaccard.</span>
 
 <span style="color:purple"> Les couleurs de la figure représentent la souris d'où provient l'échantillon et la forme représente la litière dans laquelle se trouvait la souris. Nous pouvons voir qu'il y a un regroupement des échantillons à la fois par souris et par portée.</span>
 
@@ -690,7 +686,7 @@ ggplot(net_graph, aes(x = x, y = y, xend = xend, yend = yend), layout = "fruchte
 
 
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 library("nlme")
 library("reshape2")
 ps_alpha_div <- estimate_richness(ps, split = TRUE, measure = "Shannon")
@@ -751,19 +747,19 @@ ggplot(ps_samp %>% left_join(new_data)) +
         axis.text.y = element_text(size = 6))
 ```
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 library("reshape2")
 library("DESeq2")
 ```
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 sample_data(ps)$age_binned <- cut(sample_data(ps)$age,
                           breaks = c(0, 100, 200, 400))
 levels(sample_data(ps)$age_binned) <- list(Young100="(0,100]", Mid100to200="(100,200]", Old200="(200,400]")
 sample_data(ps)$family_relationship = gsub(" ", "", sample_data(ps)$family_relationship)
 ps_dds <- phyloseq_to_deseq2(ps, design = ~ age_binned + family_relationship)
 ```
-```{r}
+```{r message=FALSE, warning=FALSE}
 geo_mean_protected <- function(x) {
   if (all(x == 0)) {
     return (0)
@@ -795,11 +791,11 @@ ggplot(abund_sums) +
   facet_grid(type ~ .) +
   xlab("Total abundance within sample")
 ```
-<span style="color:blue"> Figure 23 : Abondance de la transformation du DEseq.</span>
+<span style="color:blue">Abondance de la transformation du DEseq.</span>
 
 <span style="color:purple"> L'histogramme du haut donne l'abondance totale transformée en DESeq2 dans chaque échantillon. L'histogramme du bas est le même que celui de la figure @(fig:preprocessing-setup), et est inclus pour faciliter la comparaison.</span>
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 library("structSSI")
 el <- phy_tree(pslog)$edge
 el0 <- el
@@ -810,22 +806,22 @@ el[, 2] <- el_names[as.numeric(el0[, 2])]
 unadj_p <- treePValues(el, abund, sample_data(pslog)$age_binned)
 ```
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 hfdr_res <- hFDR.adjust(unadj_p, el, .75)
 summary(hfdr_res)
 ```
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 plot(hfdr_res, height = 5000)
 ```
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 tax <- tax_table(pslog)[, c("Family", "Genus")] %>%
   data.frame()
 tax$seq <- short_names
 ```
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 options(digits=3)
 hfdr_res@p.vals$seq <- rownames(hfdr_res@p.vals)
 tax %>%
@@ -903,7 +899,7 @@ ggplot() +  geom_point(data = sample_info,
                    100 * round(pca_res$eig[2] / sum(pca_res$eig), 2)),
        fill = "Feature Type", col = "Sample Type")
 ```
-<span style="color:blue"> Figure 24 : Un triplot d'ACP produit à partir de l'ACC a sélectionné des caractéristiques parmi plusieurs types de données : métabolites et OTU.</span>
+<span style="color:blue">Un triplot d'ACP produit à partir de l'ACC a sélectionné des caractéristiques parmi plusieurs types de données : métabolites et OTU.</span>
 
 <span style="color:purple"> cette figure présente un triplot d'ACP, qui mentre différents types d'échantillons et les caractéristiques multidomaines (Métabolites et OTU). on vois que la principale variation des données se situe entre les échantillons PD et ST, qui correspondent aux différents régimes alimentaires. En outre, les grandes valeurs de 15 des caractéristiques sont associées au statut ST, tandis que les petites valeurs de 5 d'entre elles indiquent le statut PD.</span>
 
