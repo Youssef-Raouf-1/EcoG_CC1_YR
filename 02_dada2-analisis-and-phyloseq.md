@@ -427,38 +427,39 @@ ord.nmds.bray <- ordinate(ps.prop, method="NMDS", distance="bray")
 ```
 
     ## Run 0 stress 0.08043117 
-    ## Run 1 stress 0.1327107 
-    ## Run 2 stress 0.08076337 
-    ## ... Procrustes: rmse 0.01050327  max resid 0.03232537 
-    ## Run 3 stress 0.08076337 
-    ## ... Procrustes: rmse 0.01051062  max resid 0.03234912 
-    ## Run 4 stress 0.08616061 
-    ## Run 5 stress 0.3744246 
-    ## Run 6 stress 0.1212044 
+    ## Run 1 stress 0.1228545 
+    ## Run 2 stress 0.08616061 
+    ## Run 3 stress 0.1212044 
+    ## Run 4 stress 0.0807634 
+    ## ... Procrustes: rmse 0.0105697  max resid 0.03254217 
+    ## Run 5 stress 0.08076337 
+    ## ... Procrustes: rmse 0.0105142  max resid 0.03236094 
+    ## Run 6 stress 0.08616061 
     ## Run 7 stress 0.08616061 
-    ## Run 8 stress 0.08076338 
-    ## ... Procrustes: rmse 0.01052318  max resid 0.03239025 
-    ## Run 9 stress 0.08076337 
-    ## ... Procrustes: rmse 0.01050876  max resid 0.03234343 
-    ## Run 10 stress 0.08043117 
-    ## ... Procrustes: rmse 4.749053e-06  max resid 1.438854e-05 
-    ## ... Similar to previous best
-    ## Run 11 stress 0.08616061 
-    ## Run 12 stress 0.08043116 
+    ## Run 8 stress 0.08043117 
     ## ... New best solution
-    ## ... Procrustes: rmse 2.427301e-06  max resid 5.682762e-06 
+    ## ... Procrustes: rmse 6.871307e-07  max resid 1.666868e-06 
     ## ... Similar to previous best
-    ## Run 13 stress 0.08616061 
-    ## Run 14 stress 0.08076338 
-    ## ... Procrustes: rmse 0.01052912  max resid 0.03240825 
-    ## Run 15 stress 0.08076339 
-    ## ... Procrustes: rmse 0.01055056  max resid 0.03247795 
-    ## Run 16 stress 0.09477231 
-    ## Run 17 stress 0.08616061 
-    ## Run 18 stress 0.09477182 
-    ## Run 19 stress 0.08076337 
-    ## ... Procrustes: rmse 0.01042283  max resid 0.03206126 
-    ## Run 20 stress 0.1010633 
+    ## Run 9 stress 0.09477227 
+    ## Run 10 stress 0.08616061 
+    ## Run 11 stress 0.09477196 
+    ## Run 12 stress 0.08076337 
+    ## ... Procrustes: rmse 0.01052115  max resid 0.03238373 
+    ## Run 13 stress 0.08043117 
+    ## ... Procrustes: rmse 2.426518e-06  max resid 6.515889e-06 
+    ## ... Similar to previous best
+    ## Run 14 stress 0.08076339 
+    ## ... Procrustes: rmse 0.01055219  max resid 0.03248507 
+    ## Run 15 stress 0.08043117 
+    ## ... Procrustes: rmse 3.663763e-06  max resid 8.879406e-06 
+    ## ... Similar to previous best
+    ## Run 16 stress 0.0807634 
+    ## ... Procrustes: rmse 0.01056383  max resid 0.03252299 
+    ## Run 17 stress 0.08076337 
+    ## ... Procrustes: rmse 0.01050913  max resid 0.03234448 
+    ## Run 18 stress 0.1212044 
+    ## Run 19 stress 0.1274326 
+    ## Run 20 stress 0.08616061 
     ## *** Solution reached
 
 ``` r
@@ -734,7 +735,7 @@ out.wuf.log <- ordinate(pslog, method = "MDS", distance = "wunifrac")
 ```
 
     ## Warning in UniFrac(physeq, weighted = TRUE, ...): Randomly assigning root as --
-    ## GCAAGCGTTATCCGGAATGACTGGGCGTAAAGGGTGCGTAGGTGGTTTGGCAAGTTGGTAGCGTAATTCCGGGGCTCAACCTCGGCGCTACTACCAAAACTGCTGGACTTGAGTGCAGGAGGGGTGAATGGAATTCCTAGTGTAGCGGTGGAATGCGTAGATATTAGGAAGAACACCAGCGGCGAAGGCGATTCACTGGACTGTAACTGACACTGAGGCACGAAAGCGTGGGGAG
+    ## GCGAGCGTTATCCGGATTTACTGGGTGTAAAGGGAGCGTAGACGGCCATGCAAGCTCGGTGTGAAAGGTGCGGGCACAACCCGCAGACTGCACTGAGAACTGTATGGCTGGAGTGCCGGAGGGGCAGGCGGAATTCCTGGTGTAGCGGTGAAATGCGTAGATATCAGGAGGAACACCGGTGGCGAAGGCGGCCTGCTGGACGGCGACTGACGTTGAGGCTCGAAAGCGTGGGGAG
     ## -- in the phylogenetic tree in the data you provided.
 
 ``` r
@@ -839,7 +840,7 @@ out.wuf.log <- ordinate(pslog, method = "PCoA", distance ="wunifrac")
 ```
 
     ## Warning in UniFrac(physeq, weighted = TRUE, ...): Randomly assigning root as --
-    ## GCGAGCGTTATCCGGATTTACTGGGTGTAAAGGGAGCGCAGGCGGCGTGGCAAGTCAGATGTGAAAACCCGGGGCCCAACCCCGGGACTGCATTTGAAACTGCCATGCTGGAGTGCCGGAGAGGTAAGTGGAATTCCTAGTGTAGCGGTGAAATGCGTAGATATTAGGAGGAACACCAGTGGCGAAGGCGGCTTACTGGACGGTAACTGACGCTGAGGCTCGAAAGCGTGGGGAG
+    ## GCAAGCGTTATCCGGATTTACTGGGTGTAAAGGGAGCGCAGGCGGTACGGCAAGTCTGATGTGAAAGCCCGGGGCTCAACCCCGGTACTGCATTGGAAACTGCCGGACTGGAGTGTCGGAGGGGTAAGCGGAATTCCTGGTGTAGCGGTGAAATGCGTAGATATCAGGAGGAACACCGGTGGCGAAGGCGGCTTACTGGACGATGACTGACGCTGAGGCTCGAAAGCGTGGGGAG
     ## -- in the phylogenetic tree in the data you provided.
 
 ``` r
@@ -1046,8 +1047,8 @@ table(plsClasses, testing$age)
 
     ##            
     ## plsClasses  (0,100] (100,400]
-    ##   (0,100]        58         0
-    ##   (100,400]      13        46
+    ##   (0,100]        69         0
+    ##   (100,400]       4        45
 
 ``` r
 library(randomForest)
@@ -1077,8 +1078,8 @@ table(rfClasses, testing$age)
 
     ##            
     ## rfClasses   (0,100] (100,400]
-    ##   (0,100]        70         8
-    ##   (100,400]       1        38
+    ##   (0,100]        70         3
+    ##   (100,400]       3        42
 
 ``` r
 library(vegan)
@@ -1216,7 +1217,7 @@ difficiles à classer.</span>
 as.vector(tax_table(ps)[which.max(importance(rfFit$finalModel)), c("Family", "Genus")])
 ```
 
-    ## [1] "Erysipelotrichaceae" "Turicibacter"
+    ## [1] "Lachnospiraceae" "Roseburia"
 
 ``` r
 impOtu <- as.vector(otu_table(pslog)[,which.max(importance(rfFit$finalModel))])
